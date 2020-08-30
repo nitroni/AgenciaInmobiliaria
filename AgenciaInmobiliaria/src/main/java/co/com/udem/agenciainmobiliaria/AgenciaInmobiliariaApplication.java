@@ -5,9 +5,12 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import co.com.udem.agenciainmobiliaria.entities.TiposDeIdentificacion;
 import co.com.udem.agenciainmobiliaria.repositories.TiposDeIdentificacionRepository;
+import co.com.udem.agenciainmobiliaria.util.ConvertPropiedad;
 import co.com.udem.agenciainmobiliaria.util.ConvertTiposDeIdentificacion;
 import co.com.udem.agenciainmobiliaria.util.ConvertUsuario;
 
@@ -31,6 +34,11 @@ public class AgenciaInmobiliariaApplication {
 		return new ConvertTiposDeIdentificacion();
 	}
 	
+	@Bean
+	public ConvertPropiedad convertPropiedad() {
+		
+		return new ConvertPropiedad();
+	}
 	
 	@Bean
 	public ModelMapper modelMapper() {
@@ -38,6 +46,10 @@ public class AgenciaInmobiliariaApplication {
 		return new ModelMapper();
 	}
 	
+	@Bean
+    PasswordEncoder getEncoder() {
+        return new BCryptPasswordEncoder();
+    }
 	
 	@Bean
 	InitializingBean sendDatabase(TiposDeIdentificacionRepository tiposDeIdentificacionRepository) {

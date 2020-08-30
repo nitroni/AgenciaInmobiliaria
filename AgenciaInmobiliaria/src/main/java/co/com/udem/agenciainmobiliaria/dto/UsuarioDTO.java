@@ -8,13 +8,13 @@ public class UsuarioDTO {
 	private String nombres;
 	private String apellidos;
 	private String tipoIdentificacion;
-	private Long numeroIdentificacion;
+	private String numeroIdentificacion;
 	private String direccion;
 	private int telefono;
 	private String email;
 	private String password;
 	
-	public UsuarioDTO(Long id, String nombres, String apellidos, String tipoIdentificacion, Long numeroIdentificacion,
+	public UsuarioDTO(Long id, String nombres, String apellidos, String tipoIdentificacion, String numeroIdentificacion,
 			String direccion, int telefono, String email, String password) {
 		super();
 		this.id = id;
@@ -64,11 +64,11 @@ public class UsuarioDTO {
 		this.tipoIdentificacion = tipoIdentificacion;
 	}
 
-	public Long getNumeroIdentificacion() {
+	public String getNumeroIdentificacion() {
 		return numeroIdentificacion;
 	}
 
-	public void setNumeroIdentificacion(Long numeroIdentificacion) {
+	public void setNumeroIdentificacion(String numeroIdentificacion) {
 		this.numeroIdentificacion = numeroIdentificacion;
 	}
 

@@ -18,8 +18,8 @@ public class ConvertUsuario {
         return modelMapper.map(usuarioDTO, Usuario.class);
     }
 
-    public UsuarioDTO usuarioConvertToDTO(Usuario usuarioDTO) throws ParseException {
-        return modelMapper.map(usuarioDTO, UsuarioDTO.class);
+    public UsuarioDTO usuarioConvertToDTO(Usuario usuario) throws ParseException {
+        return modelMapper.map(usuario, UsuarioDTO.class);
     }
 
     public Iterable<UsuarioDTO> listConvertToDTO(Iterable<Usuario> entity) throws ParseException{                     

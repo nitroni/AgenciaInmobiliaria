@@ -3,12 +3,14 @@ package co.com.udem.agenciainmobiliaria.rest.controller;
 
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -37,29 +39,55 @@ public class UsuarioRestController {
 	@Autowired
 	private ConvertUsuario convertUsuario;
 	
+	private Boolean valido = false;
+	
+    @Autowired
+    PasswordEncoder passwordEncoder;
+	
 	
 	@PostMapping("/agenciainmobiliaria/adicionarUsuario")
     public Map<String, String> adicionarUsuario(@RequestBody UsuarioDTO usuarioDTO) {
         Map<String, String> response = new HashMap<>();
         try {
             Usuario usuario = convertUsuario.convertToEntity(usuarioDTO);
+            
+            //Validamos si el número identificación ya esta registrado
+            Usuario usuarioValidar = usuarioRepository.findByNumeroIdentificacionPropiedad(usuario.getNumeroIdentificacion());
           
    	        Iterable<TiposDeIdentificacion> iTiposIdentificacion = tiposDeIdentificacionRepository.findAll();
             List<TiposDeIdentificacion> listaTiposIdentificacion = new ArrayList<TiposDeIdentificacion>();
             iTiposIdentificacion.iterator().forEachRemaining(listaTiposIdentificacion::add);
-     
-            Boolean valido = false;
+                
             for(int i = 0; i < listaTiposIdentificacion.size(); i++) {            	 
     	         if(usuario.getTipoIdentificacion().equals(listaTiposIdentificacion.get(i).getTipoIdentificacion())) {
     		          valido = true;
     		          break;
     	         }
             }
-
-            if(valido==true) {
-               usuarioRepository.save(usuario);
-               response.put(Constantes.CODIGO_HTTP, "200");
-               response.put(Constantes.MENSAJE_EXITO, "Registrado insertado exitosamente");
+            
+            if(valido.equals(Boolean.TRUE)) {
+            	
+            	if(usuarioValidar == null) {
+            	           	
+	            	usuarioRepository.save(Usuario.builder()
+	            			.nombres(usuario.getNombres())
+	            			.apellidos(usuario.getAPellidos())
+	            			.tipoIdentificacion(usuario.getTipoIdentificacion())
+	            			.numeroIdentificacion(usuario.getNumeroIdentificacion())
+	            			.direccion(usuario.getDireccion())
+	            			.telefono(usuario.getTelefono())
+	            			.email(usuario.getEmail())
+	    	                .password(this.passwordEncoder.encode(usuario.getPassword()))
+	    	                .roles(Arrays.asList( "ROLE_USER"))
+	    	                .build());
+	               
+	               response.put(Constantes.CODIGO_HTTP, "200");
+	               response.put(Constantes.MENSAJE_EXITO, "Registrado insertado exitosamente");
+            	}
+            	else {
+            		 response.put(Constantes.CODIGO_HTTP, "500");
+                     response.put(Constantes.MENSAJE_EXITO, "El tipo de Identificación ya está registrado, por favor ingresa otro número de identificación.");
+            	}
             }
             else {
     	       response.put(Constantes.CODIGO_HTTP, "500");
@@ -75,9 +103,19 @@ public class UsuarioRestController {
        
     }
 	
+	//Buscar por Id usuario
 	@GetMapping("/agenciainmobiliaria/usuario/{id}")
-	public Usuario buscarUsuario(@PathVariable Long id) {
-		return usuarioRepository.findById(id).get();
+	public UsuarioDTO buscarUsuario(@PathVariable Long id) {
+		
+		UsuarioDTO usuarioDTO = null;
+		
+		try {
+			usuarioDTO = convertUsuario.usuarioConvertToDTO(usuarioRepository.findById(id).get());
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+		
+		return usuarioDTO;
 	}
 	
 	
@@ -89,7 +127,6 @@ public class UsuarioRestController {
 		try {
 			usuarioDTO = convertUsuario.listConvertToDTO(usuarioRepository.findAll());
 		} catch (ParseException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 			
@@ -98,7 +135,7 @@ public class UsuarioRestController {
 	}
 	
 	@PutMapping("/agenciainmobiliaria/usuario/{id}")
-	public ResponseEntity<Object> updateUsuario(@RequestBody Usuario newUser, @PathVariable Long id){
+	public ResponseEntity<Object> updateUsuario(@RequestBody UsuarioDTO newUser, @PathVariable Long id){
 		if(usuarioRepository.findById(id).isPresent()) {
 			Usuario user = usuarioRepository.findById(id).get();
 			user.setNombres(newUser.getNombres());
@@ -122,8 +159,21 @@ public class UsuarioRestController {
 	}
 	
 	@DeleteMapping("/agenciainmobiliaria/usuario/{id}")
-    public void eliminarUsuario(@PathVariable Long id) {
-    	usuarioRepository.deleteById(id);
+    public Map<String, String> eliminarUsuario(@PathVariable Long id) {
+		
+		Map<String, String> response = new HashMap<>();
+		try {
+    	     usuarioRepository.deleteById(id);
+    	     response.put(Constantes.CODIGO_HTTP, "200");
+    	     response.put(Constantes.MENSAJE_EXITO, "El Usuario eliminado exitosamente");
+		}
+		catch (Exception e) {
+			response.put(Constantes.CODIGO_HTTP, "500");
+	        response.put(Constantes.MENSAJE_EXITO, "Se presento un error al eliminar el usuario ó el Usuario con el Id "+id+" no existe.");
+		}
+    	
+		return response;
+    	
     }
 
 	

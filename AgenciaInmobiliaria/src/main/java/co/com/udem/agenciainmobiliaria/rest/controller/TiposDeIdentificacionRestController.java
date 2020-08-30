@@ -63,7 +63,6 @@ public class TiposDeIdentificacionRestController {
 		try {
 			tiposDeIdentificacionDTO = convertTiposDeIdentificacion.listConvertToDTO(tiposDeIdentificacionRepository.findAll());
 		} catch (ParseException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 			

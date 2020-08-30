@@ -1,12 +1,39 @@
 package co.com.udem.agenciainmobiliaria.entities;
 
+import static java.util.stream.Collectors.toList;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Table;
+
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 
 @Entity
-public class Usuario {
+@Table(name="usuario")
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class Usuario implements UserDetails {
+	
+	private static final long serialVersionUID = 1L;
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -14,27 +41,17 @@ public class Usuario {
 	private String nombres;
 	private String apellidos;
 	private String tipoIdentificacion;
-	private Long numeroIdentificacion;
+	private String numeroIdentificacion;
 	private String direccion;
 	private int telefono;
 	private String email;
 	private String password;
-	public Usuario(Long id, String nombres, String apellidos, String tipoIdentificacion, Long numeroIdentificacion,
-			String direccion, int telefono, String email, String password) {
-		super();
-		this.id = id;
-		this.nombres = nombres;
-		this.apellidos = apellidos;
-		this.tipoIdentificacion = tipoIdentificacion;
-		this.numeroIdentificacion = numeroIdentificacion;
-		this.direccion = direccion;
-		this.telefono = telefono;
-		this.email = email;
-		this.password = password;
-	}
-	public Usuario() {
-		super();
-	}
+	
+	@ElementCollection(fetch = FetchType.EAGER)
+    @Builder.Default
+    private List<String> roles = new ArrayList<>();
+	
+
 	public Long getId() {
 		return id;
 	}
@@ -59,10 +76,10 @@ public class Usuario {
 	public void setTipoIdentificacion(String tipoIdentificacion) {
 		this.tipoIdentificacion = tipoIdentificacion;
 	}
-	public Long getNumeroIdentificacion() {
+	public String getNumeroIdentificacion() {
 		return numeroIdentificacion;
 	}
-	public void setNumeroIdentificacion(Long numeroIdentificacion) {
+	public void setNumeroIdentificacion(String numeroIdentificacion) {
 		this.numeroIdentificacion = numeroIdentificacion;
 	}
 	public String getDireccion() {
@@ -83,11 +100,47 @@ public class Usuario {
 	public void setEmail(String email) {
 		this.email = email;
 	}
-	public String getPassword() {
-		return password;
-	}
+
 	public void setPassword(String password) {
 		this.password = password;
+	}
+	
+	
+	@Override
+	public Collection<? extends GrantedAuthority> getAuthorities() {
+		// TODO Auto-generated method stub
+		return this.roles.stream().map(SimpleGrantedAuthority::new).collect(toList());
+	}
+	@Override
+	public String getPassword() {
+		// TODO Auto-generated method stub
+		return this.password;
+	}
+	
+	@Override
+	public String getUsername() {
+		// TODO Auto-generated method stub
+		return this.tipoIdentificacion;
+	}
+	@Override
+	public boolean isAccountNonExpired() {
+		// TODO Auto-generated method stub
+		return true;
+	}
+	@Override
+	public boolean isAccountNonLocked() {
+		// TODO Auto-generated method stub
+		return true;
+	}
+	@Override
+	public boolean isCredentialsNonExpired() {
+		// TODO Auto-generated method stub
+		return true;
+	}
+	@Override
+	public boolean isEnabled() {
+		// TODO Auto-generated method stub
+		return true;
 	}
 	
 	
