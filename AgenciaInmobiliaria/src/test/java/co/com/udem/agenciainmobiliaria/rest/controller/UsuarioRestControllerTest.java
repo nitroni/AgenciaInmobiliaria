@@ -111,7 +111,7 @@ public class UsuarioRestControllerTest {
     @Test
     public void updateUsuarioTest() {
     	//Modificamos el ID 1 que fue el primer registro en base de datos para la utenticación
-    	Long id = (long) 2;
+    	Long id = (long) 1;
     	usuarioDTO.setNombres("Prueba1 Mod1");
     	usuarioDTO.setAPellidos("Prueba3, Mod3");
     	usuarioDTO.setTipoIdentificacion("CC");

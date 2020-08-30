@@ -140,9 +140,9 @@ public class PropiedadRestControllerTest {
     	adicionarPropiedadTest();
         PropiedadDTO propiedadDTO = new PropiedadDTO();
     	
-    	propiedadDTO.setAreaMetrosCuadros(3.4);
-    	propiedadDTO.setNumeroHabitaciones(5);
-    	propiedadDTO.setNumeroBanos(4);
+    	propiedadDTO.setAreaMetrosCuadros(7.4);
+    	propiedadDTO.setNumeroHabitaciones(2);
+    	propiedadDTO.setNumeroBanos(7);
     	propiedadDTO.setTipoRegistro("Venta");
     	propiedadDTO.setValor(110000);
     	
